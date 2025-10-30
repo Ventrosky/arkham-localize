@@ -28,7 +28,7 @@ func RetrieveSimilarCards(db *sql.DB, queryEmbedding []float32, limit int) ([]Co
 	query := `
 		SELECT card_code, card_name, is_back, english_text, italian_text
 		FROM card_embeddings
-		WHERE embedding IS NOT NULL
+		WHERE embedding IS NOT NULL AND card_code IS NOT NULL
 		ORDER BY embedding <-> $1
 		LIMIT $2
 	`

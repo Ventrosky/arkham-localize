@@ -145,6 +145,17 @@ backend-build:
 	@cd $(BACKEND_DIR) && go build -o ../bin/arkham-localize cmd/server/main.go
 	@echo "✅ Backend built"
 
+backend-test:
+	@echo "🧪 Running backend tests..."
+	@cd $(BACKEND_DIR) && go test ./... -v
+	@echo "✅ Tests complete"
+
+backend-test-coverage:
+	@echo "📊 Running backend tests with coverage..."
+	@cd $(BACKEND_DIR) && go test ./... -coverprofile=coverage.out
+	@cd $(BACKEND_DIR) && go tool cover -html=coverage.out -o coverage.html
+	@echo "✅ Coverage report generated: backend/coverage.html"
+
 # Frontend
 frontend:
 	@echo "⚛️  Starting React frontend..."
