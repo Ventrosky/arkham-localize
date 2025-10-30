@@ -2,6 +2,18 @@
 
 A Retrieval-Augmented Generation (RAG) system for translating Arkham Horror: The Card Game fan content into consistent Italian using official translations as context.
 
+## 🚀 Quick Start (3 Commands)
+
+```bash
+git clone <repository-url>
+cd arkham-localize
+make setup          # Downloads data, creates env files
+# Edit scripts/.env and add your OPENAI_API_KEY
+make all            # Installs dependencies, starts DB, runs ingestion
+```
+
+See [Quick Start](#quick-start) below for details.
+
 ## Architecture
 
 - **Backend**: Go with PostgreSQL + pgvector
@@ -37,14 +49,39 @@ arkham-localize/
 
 ## Quick Start
 
-### 1. Prerequisites
+### Prerequisites
 
 - Go 1.21+
-- Python 3.8+
 - Node.js 18+
 - Docker & Docker Compose
+- Make (optional but recommended)
 
-### 2. Setup Data
+### Easy Setup (Recommended)
+
+Use the Makefile for a streamlined setup experience:
+
+```bash
+# 1. Complete initial setup (downloads data, creates env files)
+make setup
+
+# 2. Edit scripts/.env and add your OPENAI_API_KEY
+# Then install all dependencies and run ingestion
+make all
+```
+
+This will:
+- Download the arkhamdb-json-data repository
+- Create all necessary `.env` files
+- Install Go and Node.js dependencies
+- Build the ingestion tool (Go)
+- Start PostgreSQL
+- Run the data ingestion pipeline
+
+### Manual Setup
+
+If you prefer to set up manually:
+
+#### 1. Setup Data
 
 ```bash
 # Download arkhamdb-json-data repository
@@ -53,19 +90,17 @@ bash scripts/download_data.sh
 # Start PostgreSQL
 docker-compose up -d postgres
 
-# Install Python dependencies
-cd scripts
-pip install -r requirements.txt
+# Build ingestion tool (Go)
+go build -o bin/ingest ./cmd/ingest
 
-# Configure environment (create .env from .env.example)
-cp .env.example .env
-# Edit .env with your OpenAI API key
+# Set OpenAI API key
+export OPENAI_API_KEY=your-key-here
 
 # Run ingestion pipeline
-python ingest.py
+./bin/ingest -clear -data .data/arkhamdb-json-data
 ```
 
-### 3. Setup Backend
+#### 2. Setup Backend
 
 ```bash
 cd backend
@@ -79,7 +114,7 @@ cp .env.example .env
 go run cmd/server/main.go
 ```
 
-### 4. Setup Frontend
+#### 3. Setup Frontend
 
 ```bash
 cd frontend
@@ -92,18 +127,34 @@ cp .env.example .env
 npm run dev
 ```
 
+### Development
+
+After initial setup, use Makefile shortcuts:
+
+```bash
+make check      # Validate your setup
+make validate   # Test extraction without API calls
+make db-up      # Start PostgreSQL
+make db-down    # Stop PostgreSQL
+make ingest     # Re-run ingestion (requires OPENAI_API_KEY)
+make backend    # Run Go backend
+make frontend   # Run React frontend
+make dev        # Start all services (db + backend + frontend)
+```
+
 ## Key Features
 
 - **Symbol Preservation**: Game symbols (e.g., `[action]`, `[elder_sign]`) are preserved exactly as entered
 - **Context-Aware**: Uses official Italian card translations to ensure terminology consistency
 - **Transparent**: Shows which cards were used as context for each translation
 
-## Development
+## Documentation
 
-See individual README files in each directory for more details:
-- [Backend README](backend/README.md)
-- [Frontend README](frontend/README.md)
-- [Scripts README](scripts/README.md)
+- [Installation Guide](INSTALL.md) - Detailed setup instructions
+- [Backend README](backend/README.md) - Backend development details
+- [Frontend README](frontend/README.md) - Frontend development details
+
+**Note:** Data ingestion is now handled by the Go tool in `cmd/ingest`. Python is no longer required.
 
 ## Data Source
 

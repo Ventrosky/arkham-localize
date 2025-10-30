@@ -1,0 +1,13 @@
+{
+    "makefile.configureOnOpen": false,
+    "[go]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    },
+    "go.formatTool": "gofmt",
+    "go.lintOnSave": "workspace",
+    "go.vetOnSave": "workspace"
+}
+

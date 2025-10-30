@@ -7,25 +7,16 @@
 # Data cache (downloaded arkhamdb-json-data repo)
 .data/
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-env/
-ENV/
-
 # Go
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
-backend/arkham-localize
-backend/.go/
+bin/
+**/.go/
 vendor/
+go.sum
 
 # Node
 node_modules/
@@ -35,11 +26,14 @@ frontend/.vite/
 
 # IDE
 .internal/
-.vscode/
+.vscode/settings.json.bak
 .idea/
 *.swp
 *.swo
 *~
+
+# VS Code workspace settings (keep in repo for team consistency)
+# Note: .vscode/settings.json and extensions.json are committed
 
 # OS
 .DS_Store
