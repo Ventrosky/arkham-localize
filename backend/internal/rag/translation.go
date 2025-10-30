@@ -29,6 +29,7 @@ CRITICAL RULES - NEVER TRANSLATE OR MODIFY:
 2. ALL HTML tags must be preserved exactly: <b>...</b>, <i>...</i>, etc.
 3. ALL numbers and mathematical symbols must be preserved: +1, +2, -1, 0, 1, 2, etc.
 4. ALL punctuation and formatting (parentheses, colons, periods) must be preserved
+5. ALL line breaks (newlines) must be preserved EXACTLY as they appear in the source text
 
 TRANSLATION RULES:
 - Content in DOUBLE square brackets [[ ]] represents card traits/types that SHOULD be translated to Italian:
@@ -38,9 +39,10 @@ TRANSLATION RULES:
 - Use the official Italian translations provided as context to ensure terminology consistency
 - Match the style and tone of the official translations
 - Maintain game mechanics terminology (actions, skills, resources, etc.)
+- PRESERVE all line breaks: if the source text has a newline between sentences, keep it in the translation
 - Return ONLY the Italian translation, no explanations or additional text
 
-REMEMBER: Single brackets [ ] are game symbols (DO NOT TRANSLATE). Double brackets [[ ]] are traits/types (TRANSLATE but keep [[ ]] format).`
+REMEMBER: Single brackets [ ] are game symbols (DO NOT TRANSLATE). Double brackets [[ ]] are traits/types (TRANSLATE but keep [[ ]] format). Line breaks must be preserved exactly.`
 
 	// Build user prompt with context
 	var contextBuilder strings.Builder
@@ -55,12 +57,13 @@ REMEMBER: Single brackets [ ] are game symbols (DO NOT TRANSLATE). Double bracke
 
 	userPrompt := fmt.Sprintf(`%sTranslate the following English text to Italian:
 
-"%s"
+    "%s"
 
-CRITICAL TRANSLATION RULES:
-- Do NOT translate anything inside SINGLE square brackets [ ] - these are game symbols that must remain EXACTLY as written (e.g., [action], [elder_sign], [willpower])
-- DO translate content inside DOUBLE square brackets [[ ]] to Italian, but maintain the [[ ]] format (e.g., [[Tome]] → [[Tomo]], [[Spell]] → [[Incantesimo]], [[Traits]] → [[Tratti]])
-- Only translate the words outside of single brackets [ ].`,
+    CRITICAL TRANSLATION RULES:
+    - Do NOT translate anything inside SINGLE square brackets [ ] - these are game symbols that must remain EXACTLY as written (e.g., [action], [elder_sign], [willpower])
+    - DO translate content inside DOUBLE square brackets [[ ]] to Italian, but maintain the [[ ]] format (e.g., [[Tome]] → [[Tomo]], [[Spell]] → [[Incantesimo]], [[Traits]] → [[Tratti]])
+    - PRESERVE all line breaks (newlines) exactly as they appear in the source text above
+    - Only translate the words outside of single brackets [ ].`,
 		contextBuilder.String(), englishText)
 
 	reqBody := struct {
