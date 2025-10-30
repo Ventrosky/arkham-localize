@@ -75,8 +75,9 @@ npm install
 ### Step 4: Build Ingestion Tool
 
 ```bash
+cd backend
+go build -o ../bin/ingest ./cmd/ingest
 cd ..
-go build -o bin/ingest ./cmd/ingest
 ```
 
 ### Step 5: Start Database

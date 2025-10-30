@@ -110,7 +110,7 @@ ingest: db-up
 	@echo "📊 Running data ingestion pipeline (Go)..."
 	@if [ ! -d bin ]; then \
 		echo "🔨 Building ingest tool..."; \
-		go build -o bin/ingest ./cmd/ingest; \
+		cd $(BACKEND_DIR) && go build -o ../bin/ingest ./cmd/ingest; \
 	fi
 	@./bin/ingest -clear -data .data/arkhamdb-json-data
 	@echo "✅ Ingestion complete!"
@@ -142,7 +142,7 @@ backend:
 
 backend-build:
 	@echo "🔷 Building Go backend..."
-	@cd $(BACKEND_DIR) && go build -o arkham-localize cmd/server/main.go
+	@cd $(BACKEND_DIR) && go build -o ../bin/arkham-localize cmd/server/main.go
 	@echo "✅ Backend built"
 
 # Frontend

@@ -1,0 +1,63 @@
+package rag
+
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/pgvector/pgvector-go"
+)
+
+// ContextCard represents a card used as context for translation
+type ContextCard struct {
+	CardName    string `json:"card_name"`
+	CardCode    string `json:"card_code"`
+	IsBack      bool   `json:"is_back"`
+	EnglishText string `json:"english_text"`
+	ItalianText string `json:"italian_text"`
+}
+
+// RetrieveSimilarCards retrieves the most similar cards from the database
+// using vector similarity search
+func RetrieveSimilarCards(db *sql.DB, queryEmbedding []float32, limit int) ([]ContextCard, error) {
+	if len(queryEmbedding) == 0 {
+		return nil, fmt.Errorf("query embedding is empty")
+	}
+
+	vector := pgvector.NewVector(queryEmbedding)
+
+	query := `
+		SELECT card_code, card_name, is_back, english_text, italian_text
+		FROM card_embeddings
+		WHERE embedding IS NOT NULL
+		ORDER BY embedding <-> $1
+		LIMIT $2
+	`
+
+	rows, err := db.Query(query, vector, limit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query similar cards: %w", err)
+	}
+	defer rows.Close()
+
+	var cards []ContextCard
+	for rows.Next() {
+		var card ContextCard
+		if err := rows.Scan(
+			&card.CardCode,
+			&card.CardName,
+			&card.IsBack,
+			&card.EnglishText,
+			&card.ItalianText,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan card: %w", err)
+		}
+		cards = append(cards, card)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+
+	return cards, nil
+}
+

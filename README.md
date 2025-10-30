@@ -39,10 +39,8 @@ arkham-localize/
 │   │   ├── components/  # UI components
 │   │   └── lib/         # API client
 │   └── package.json
-├── scripts/             # Data ingestion pipeline
-│   ├── ingest.py        # Main ingestion script
-│   ├── download_data.sh # Download arkhamdb-json-data
-│   └── requirements.txt
+├── scripts/             # Utility scripts
+│   └── download_data.sh # Download arkhamdb-json-data
 ├── docker-compose.yml   # PostgreSQL with pgvector
 └── .data/               # Git-ignored: cached arkhamdb-json-data repo
 ```
@@ -91,7 +89,9 @@ bash scripts/download_data.sh
 docker-compose up -d postgres
 
 # Build ingestion tool (Go)
-go build -o bin/ingest ./cmd/ingest
+cd backend
+go build -o ../bin/ingest ./backend/cmd/ingest
+cd ..
 
 # Set OpenAI API key
 export OPENAI_API_KEY=your-key-here
@@ -154,7 +154,7 @@ make dev        # Start all services (db + backend + frontend)
 - [Backend README](backend/README.md) - Backend development details
 - [Frontend README](frontend/README.md) - Frontend development details
 
-**Note:** Data ingestion is now handled by the Go tool in `cmd/ingest`. Python is no longer required.
+**Note:** Data ingestion is now handled by the Go tool in `backend/cmd/ingest`.
 
 ## Data Source
 
