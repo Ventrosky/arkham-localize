@@ -105,7 +105,7 @@ func TestRetrieveSimilarCards_RealDatabase(t *testing.T) {
 	t.Logf("Retrieved embedding with %d dimensions", len(embedding))
 
 	// Test retrieval - search for cards similar to Machete
-	limit := 5
+	limit := 6
 	cards, err := RetrieveSimilarCards(database, embedding, limit)
 	if err != nil {
 		t.Fatalf("Failed to retrieve similar cards: %v", err)

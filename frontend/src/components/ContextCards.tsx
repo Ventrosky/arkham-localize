@@ -9,14 +9,40 @@ interface CardContextDisplayProps {
 }
 
 function CardContextDisplay({ card }: CardContextDisplayProps) {
+  const arkhamDbUrl = card.card_code 
+    ? `https://arkhamdb.com/card/${card.card_code}` 
+    : null;
+
   return (
     <div className="p-3 border border-gray-700 bg-gray-800 rounded-lg shadow-inner flex flex-col gap-1">
-      <h4 className="text-lg font-bold text-yellow-300">{card.card_name}</h4>
+      {arkhamDbUrl ? (
+        <a 
+          href={arkhamDbUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-lg font-bold text-yellow-300 hover:text-yellow-200 hover:underline transition-colors cursor-pointer"
+        >
+          {card.card_name}
+        </a>
+      ) : (
+        <h4 className="text-lg font-bold text-yellow-300">{card.card_name}</h4>
+      )}
       {card.card_code && (
         <div className="flex items-center gap-2 mb-2">
-          <span className="bg-gray-700 px-2 py-1 rounded text-xs text-gray-300">
-            {card.card_code}
-          </span>
+          {arkhamDbUrl ? (
+            <a
+              href={arkhamDbUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-700 px-2 py-1 rounded text-xs text-gray-300 hover:bg-gray-600 hover:text-white transition-colors cursor-pointer"
+            >
+              {card.card_code}
+            </a>
+          ) : (
+            <span className="bg-gray-700 px-2 py-1 rounded text-xs text-gray-300">
+              {card.card_code}
+            </span>
+          )}
           {card.is_back && (
             <span className="bg-blue-900 text-blue-200 px-2 py-1 rounded text-xs">
               Back

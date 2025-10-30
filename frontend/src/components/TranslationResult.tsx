@@ -3,14 +3,21 @@ interface TranslationResultProps {
   loading: boolean
 }
 
+// Removes double quotes from the beginning and end of the translation
+function cleanTranslation(translation: string): string {
+  return translation.trim().replace(/^"+|"+$/g, '')
+}
+
 export default function TranslationResult({ translation, loading }: TranslationResultProps) {
+  const cleanedTranslation = translation ? cleanTranslation(translation) : ''
+  
   return (
     <div>
       <h2 className="text-xl font-semibold mb-3 text-yellow-200 border-b border-gray-700 pb-2">
         Italian Translation Result
       </h2>
       <div className={`p-4 min-h-[100px] rounded-lg border-2 ${
-        translation ? 'border-green-600 bg-gray-800' : 'border-dashed border-gray-700 bg-gray-900'
+        cleanedTranslation ? 'border-green-600 bg-gray-800' : 'border-dashed border-gray-700 bg-gray-900'
       } transition-all duration-300`}>
         {loading && (
           <div className="flex items-center justify-center h-full">
@@ -21,10 +28,10 @@ export default function TranslationResult({ translation, loading }: TranslationR
             <span className="text-yellow-500">Awaiting LLM Response...</span>
           </div>
         )}
-        {!loading && translation && (
-          <p className="text-lg text-white whitespace-pre-wrap">{translation}</p>
+        {!loading && cleanedTranslation && (
+          <p className="text-lg text-white whitespace-pre-wrap">{cleanedTranslation}</p>
         )}
-        {!loading && !translation && (
+        {!loading && !cleanedTranslation && (
           <p className="text-gray-500 italic">Translation will appear here.</p>
         )}
       </div>

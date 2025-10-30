@@ -133,7 +133,7 @@ func translateHandler(database *sql.DB) http.HandlerFunc {
 		}
 
 		// Step 2: Retrieve similar cards from database
-		contextCards, err := rag.RetrieveSimilarCards(database, queryEmbedding, 5)
+		contextCards, err := rag.RetrieveSimilarCards(database, queryEmbedding, 6)
 		if err != nil {
 			log.Printf("Error retrieving similar cards: %v", err)
 			http.Error(w, fmt.Sprintf("Failed to retrieve context: %v", err), http.StatusInternalServerError)
