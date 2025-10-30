@@ -1,6 +1,8 @@
-# Arkham Horror LCG Agentic Translator
+# Arkham Localize
 
 A Retrieval-Augmented Generation (RAG) system for translating Arkham Horror: The Card Game fan content into consistent Italian using official translations as context.
+
+**Arkham Horror LCG Consistent Content Translator** - Grounded translations using vector similarity for consistent terminology.
 
 ## 🚀 Quick Start (3 Commands)
 

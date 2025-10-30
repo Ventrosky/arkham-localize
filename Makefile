@@ -2,7 +2,7 @@
 
 # Default target
 help:
-	@echo "Arkham Horror LCG Agentic Translator - Makefile"
+	@echo "Arkham Localize - Makefile"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  make setup         - Complete initial setup (downloads data, creates env files)"
@@ -31,7 +31,7 @@ ENV_FILE := $(SCRIPTS_DIR)/.env
 
 # Complete initial setup
 setup:
-	@echo "🚀 Setting up Arkham Horror LCG Agentic Translator..."
+	@echo "🚀 Setting up Arkham Localize..."
 	@echo ""
 	@echo "📦 Downloading arkhamdb-json-data..."
 	@bash $(SCRIPTS_DIR)/download_data.sh || true

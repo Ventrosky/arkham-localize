@@ -1,6 +1,6 @@
 # Go Backend
 
-Minimal Go backend for the Arkham Horror LCG Agentic Translator RAG system.
+Minimal Go backend for the Arkham Localize RAG system (Arkham Horror LCG Consistent Content Translator).
 
 ## Prerequisites
 

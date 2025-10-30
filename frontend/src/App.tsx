@@ -35,10 +35,10 @@ function App() {
       <div className="max-w-4xl mx-auto ah-bg p-6 rounded-xl shadow-2xl border border-gray-700">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-yellow-500 mb-2">
-            Arkham Horror LCG Agentic Translator
+            Arkham Localize
           </h1>
           <p className="text-gray-400 text-lg">
-            Grounded translation using vector similarity for consistent terminology.
+            Arkham Horror LCG Consistent Content Translator
           </p>
         </header>
 

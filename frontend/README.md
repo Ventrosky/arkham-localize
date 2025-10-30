@@ -1,6 +1,6 @@
 # React Frontend
 
-React + Vite + Tailwind CSS frontend for the Arkham Horror LCG Agentic Translator.
+React + Vite + Tailwind CSS frontend for Arkham Localize (Arkham Horror LCG Consistent Content Translator).
 
 ## Prerequisites
 

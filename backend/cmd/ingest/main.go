@@ -65,7 +65,7 @@ func main() {
 	}
 
 	fmt.Println("=" + strings.Repeat("=", 59))
-	fmt.Println("Arkham Horror LCG Agentic Translator - Data Ingestion Pipeline (Go)")
+	fmt.Println("Arkham Localize - Data Ingestion Pipeline (Go)")
 	fmt.Println("=" + strings.Repeat("=", 59))
 	fmt.Printf("\nData directory: %s\n", dataPath)
 	fmt.Printf("Embedding model: %s\n", *embeddingModel)
