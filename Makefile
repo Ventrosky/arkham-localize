@@ -1,8 +1,8 @@
-.PHONY: help setup install test clean all dev db-up db-down ingest backend frontend validate
+.PHONY: help setup install test clean all dev db-up db-down ingest backend backend-build backend-test backend-test-coverage frontend frontend-build frontend-preview frontend-install validate check
 
 # Default target
 help:
-	@echo "Arkham LCG Translation System - Makefile"
+	@echo "Arkham Horror LCG Agentic Translator - Makefile"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  make setup         - Complete initial setup (downloads data, creates env files)"
@@ -11,8 +11,11 @@ help:
 	@echo "  make db-down       - Stop PostgreSQL"
 	@echo "  make ingest        - Run data ingestion pipeline"
 	@echo "  make validate      - Validate setup without running ingestion"
-	@echo "  make backend       - Build and run Go backend"
+	@echo "  make backend       - Run Go backend server"
+	@echo "  make backend-build - Build Go backend binary"
+	@echo "  make backend-test  - Run backend tests"
 	@echo "  make frontend      - Start React frontend dev server"
+	@echo "  make frontend-build- Build React frontend for production"
 	@echo "  make dev           - Start all services (db + backend + frontend)"
 	@echo "  make clean         - Clean build artifacts and caches"
 	@echo "  make all           - Full setup and ingestion (setup + install + db-up + ingest)"
@@ -28,7 +31,7 @@ ENV_FILE := $(SCRIPTS_DIR)/.env
 
 # Complete initial setup
 setup:
-	@echo "🚀 Setting up Arkham LCG Translation System..."
+	@echo "🚀 Setting up Arkham Horror LCG Agentic Translator..."
 	@echo ""
 	@echo "📦 Downloading arkhamdb-json-data..."
 	@bash $(SCRIPTS_DIR)/download_data.sh || true
@@ -158,23 +161,39 @@ backend-test-coverage:
 
 # Frontend
 frontend:
-	@echo "⚛️  Starting React frontend..."
+	@echo "⚛️  Starting React frontend dev server..."
+	@echo "   Frontend will be available at http://localhost:5173"
 	@cd $(FRONTEND_DIR) && npm run dev
 
 frontend-build:
-	@echo "⚛️  Building React frontend..."
+	@echo "⚛️  Building React frontend for production..."
 	@cd $(FRONTEND_DIR) && npm run build
-	@echo "✅ Frontend built"
+	@echo "✅ Frontend built (output in $(FRONTEND_DIR)/dist)"
+
+frontend-preview:
+	@echo "⚛️  Previewing production build..."
+	@cd $(FRONTEND_DIR) && npm run preview
+
+frontend-install:
+	@echo "📦 Installing frontend dependencies..."
+	@cd $(FRONTEND_DIR) && npm install
+	@echo "✅ Frontend dependencies installed"
 
 # Development (start all services)
 dev: db-up
 	@echo "🚀 Starting development environment..."
-	@echo "   Backend: http://localhost:3001"
-	@echo "   Frontend: http://localhost:5173"
+	@echo ""
+	@echo "📡 Services:"
+	@echo "   Database:  localhost:5432 (PostgreSQL with pgvector)"
+	@echo "   Backend:   http://localhost:3001"
+	@echo "   Frontend:  http://localhost:5173"
 	@echo ""
 	@echo "⚠️  Press Ctrl+C to stop all services"
-	@trap 'docker-compose stop postgres' INT TERM; \
-		make -j2 backend frontend
+	@echo ""
+	@trap 'echo ""; echo "🛑 Stopping services..."; docker-compose stop postgres; exit' INT TERM; \
+		(echo "🔷 Starting backend..."; cd $(BACKEND_DIR) && go run cmd/server/main.go &) && \
+		(echo "⚛️  Starting frontend..."; cd $(FRONTEND_DIR) && npm run dev &) && \
+		wait
 
 # Full setup and ingestion
 all: setup install db-up ingest
@@ -190,7 +209,7 @@ clean:
 	@echo "🧹 Cleaning build artifacts..."
 	@rm -rf bin/
 	@cd $(BACKEND_DIR) && go clean
-	@cd $(FRONTEND_DIR) && rm -rf node_modules dist
+	@cd $(FRONTEND_DIR) && rm -rf node_modules dist .vite 2>/dev/null || rm -rf node_modules dist
 	@echo "✅ Cleanup complete"
 
 clean-data:
@@ -241,8 +260,18 @@ check:
 	@command -v go >/dev/null 2>&1 && echo "  ✅ Go installed" || echo "  ❌ Go not found"
 	@command -v npm >/dev/null 2>&1 && echo "  ✅ npm installed" || echo "  ❌ npm not found"
 	@echo ""
-	@echo "Note: Python is no longer required (ingestion now uses Go)"
-	@echo ""
 	@echo "Database:"
 	@docker-compose ps postgres 2>/dev/null | grep -q "Up" && echo "  ✅ PostgreSQL running" || echo "  ❌ PostgreSQL not running (run 'make db-up')"
+	@echo ""
+	@echo "Frontend:"
+	@if [ -d $(FRONTEND_DIR)/node_modules ]; then \
+		echo "  ✅ Frontend dependencies installed"; \
+	else \
+		echo "  ❌ Frontend dependencies missing (run 'make install-frontend' or 'make install')"; \
+	fi
+	@if [ -d $(FRONTEND_DIR)/dist ]; then \
+		echo "  ✅ Frontend built (production)"; \
+	else \
+		echo "  ⚠️  Frontend not built (run 'make frontend-build' for production)"; \
+	fi
 

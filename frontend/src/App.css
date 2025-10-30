@@ -1,0 +1,26 @@
+/* Custom styles for Arkham Horror feel */
+.ah-bg {
+  background-image: linear-gradient(135deg, #1f2937 0%, #0f172a 100%);
+}
+
+.ah-button {
+  background-color: #b91c1c; /* Red */
+  transition: all 0.2s;
+  box-shadow: 0 4px #991b1b;
+}
+
+.ah-button:hover {
+  background-color: #dc2626;
+}
+
+.ah-button:active {
+  box-shadow: 0 2px #7f1d1d;
+  transform: translateY(2px);
+}
+
+.ah-button:disabled {
+  background-color: #4b5563;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}

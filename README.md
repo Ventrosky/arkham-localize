@@ -1,4 +1,4 @@
-# Arkham LCG Consistent Content Translator (LCCCT)
+# Arkham Horror LCG Agentic Translator
 
 A Retrieval-Augmented Generation (RAG) system for translating Arkham Horror: The Card Game fan content into consistent Italian using official translations as context.
 

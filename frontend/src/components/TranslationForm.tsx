@@ -1,0 +1,39 @@
+import { useState, FormEvent } from 'react'
+
+interface TranslationFormProps {
+  onSubmit: (text: string) => void
+  loading: boolean
+}
+
+export default function TranslationForm({ onSubmit, loading }: TranslationFormProps) {
+  const [text, setText] = useState('')
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    onSubmit(text)
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="inputText" className="block text-xl font-semibold mb-2 text-yellow-200">
+        English Text to Translate
+      </label>
+      <textarea
+        id="inputText"
+        rows={4}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Enter card text here (e.g., '[action] Investigate. If you succeed, deal 1 damage to an enemy at your location.')"
+        className="w-full p-4 rounded-lg bg-gray-800 border border-gray-700 focus:ring-yellow-500 focus:border-yellow-500 text-lg text-gray-100"
+        disabled={loading}
+      />
+      <button
+        onClick={handleSubmit}
+        disabled={loading || !text.trim()}
+        className="ah-button mt-4 w-full sm:w-auto px-6 py-3 text-lg font-bold text-white rounded-xl shadow-lg hover:shadow-xl transition duration-300"
+      >
+        {loading ? 'Translating...' : 'Translate Card Text'}
+      </button>
+    </form>
+  )
+}
