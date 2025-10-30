@@ -68,6 +68,21 @@ function App() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="mt-12 text-center">
+        <p className="text-xs text-gray-500">
+          <a
+            href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-300 underline"
+          >
+            Arkham Horror: The Card Game™
+          </a>
+          {' '}and all related content © Fantasy Flight Games (FFG). This site is not produced, endorsed by or affiliated with FFG.
+        </p>
+      </footer>
     </div>
   )
 }

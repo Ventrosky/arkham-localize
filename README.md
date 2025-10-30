@@ -159,3 +159,7 @@ make dev        # Start all services (db + backend + frontend)
 ## Data Source
 
 Card data is sourced from [arkhamdb-json-data](https://github.com/Kamalisk/arkhamdb-json-data).
+
+## Acknowledgments
+
+This software is not affiliated or endorsed by Arkham Horror: The Card Game, (c) 2016 Fantasy Flight Games.
