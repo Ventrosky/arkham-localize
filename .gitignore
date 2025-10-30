@@ -1,0 +1,47 @@
+# Environment files
+.env
+**/.env
+.env.local
+.env.*.local
+
+# Data cache (downloaded arkhamdb-json-data repo)
+.data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+backend/arkham-localize
+backend/.go/
+vendor/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.log
+
+# IDE
+.internal/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
