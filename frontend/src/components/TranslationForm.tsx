@@ -15,6 +15,15 @@ export default function TranslationForm({ onSubmit, loading }: TranslationFormPr
     onSubmit(text, language)
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      if (!loading && text.trim()) {
+        onSubmit(text, language)
+      }
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-4">
@@ -43,6 +52,7 @@ export default function TranslationForm({ onSubmit, loading }: TranslationFormPr
         rows={4}
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="Enter card text here (e.g., '[action] Investigate. If you succeed, deal 1 damage to an enemy at your location.')"
         className="w-full p-4 rounded-lg bg-gray-800 border border-gray-700 focus:ring-yellow-500 focus:border-yellow-500 text-lg text-gray-100"
         disabled={loading}
