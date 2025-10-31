@@ -4,6 +4,8 @@ A Retrieval-Augmented Generation (RAG) system for translating Arkham Horror: The
 
 **Arkham Horror LCG Consistent Content Translator** - Grounded translations using vector similarity for consistent terminology.
 
+![Demo](demo_opt.gif)
+
 ## 🚀 Quick Start (3 Commands)
 
 ```bash
