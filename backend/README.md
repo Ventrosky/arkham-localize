@@ -67,3 +67,6 @@ Translates English Arkham LCG text to multiple languages using RAG.
 - If `language` is not provided, defaults to `it` (Italian)
 - Only supported language codes are accepted (returns 400 for invalid languages)
 
+## TODO
+
+- [ ] Divide storing embeddings logics from updating translations with a different CLI command
