@@ -31,8 +31,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 font-['Inter']">
-      <div className="max-w-4xl mx-auto ah-bg p-6 rounded-xl shadow-2xl border border-gray-700">
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-4 sm:p-8 font-['Inter'] flex flex-col">
+      <div className="max-w-4xl mx-auto ah-bg p-6 rounded-xl shadow-2xl border border-gray-700 flex-1">
         <header className="text-center mb-8">
           <h1 className="text-4xl font-extrabold text-yellow-500 mb-2">
             Arkham Localize
@@ -68,19 +68,17 @@ function App() {
           </div>
         )}
       </div>
-
       {/* Footer */}
-      <footer className="mt-12 text-center">
+      <footer className="mt-auto py-4 text-center w-full max-w-4xl mx-auto px-4 sm:px-8">
         <p className="text-xs text-gray-500">
-          <a
+        The information presented on this site about <a
             href="https://www.fantasyflightgames.com/en/products/arkham-horror-the-card-game/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-gray-300 underline"
           >
             Arkham Horror: The Card Game™
-          </a>
-          {' '}and all related content © Fantasy Flight Games (FFG). This site is not produced, endorsed by or affiliated with FFG.
+          </a> is copyrighted by Fantasy Flight Games.<br />This website is not produced, endorsed, supported, or affiliated with Fantasy Flight Games. 
         </p>
       </footer>
     </div>
