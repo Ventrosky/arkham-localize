@@ -14,7 +14,7 @@ export default function TranslationResult({ translation, loading }: TranslationR
   return (
     <div>
       <h2 className="text-xl font-semibold mb-3 text-yellow-200 border-b border-gray-700 pb-2">
-        Italian Translation Result
+        Translation Result
       </h2>
       <div className={`p-4 min-h-[100px] rounded-lg border-2 ${
         cleanedTranslation ? 'border-green-600 bg-gray-800' : 'border-dashed border-gray-700 bg-gray-900'
