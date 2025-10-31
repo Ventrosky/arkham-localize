@@ -3,7 +3,7 @@ export interface ContextCard {
   card_code: string;
   is_back: boolean;
   english_text: string;
-  italian_text: string;
+  translated_text: string;
 }
 
 export interface TranslateResponse {
@@ -13,17 +13,27 @@ export interface TranslateResponse {
 
 export interface TranslateRequest {
   text: string;
+  language: string; // "it", "fr", "de", "es"
 }
+
+export type SupportedLanguage = 'it' | 'fr' | 'de' | 'es';
+
+export const SUPPORTED_LANGUAGES: { code: SupportedLanguage; name: string }[] = [
+  { code: 'it', name: 'Italian' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'es', name: 'Spanish' },
+];
 
 const API_BASE_URL = (import.meta.env?.VITE_API_URL as string) || 'http://localhost:3001';
 
-export async function translate(text: string): Promise<TranslateResponse> {
+export async function translate(text: string, language: SupportedLanguage = 'it'): Promise<TranslateResponse> {
   const response = await fetch(`${API_BASE_URL}/translate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, language }),
   });
 
   if (!response.ok) {

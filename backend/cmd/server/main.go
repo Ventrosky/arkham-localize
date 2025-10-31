@@ -16,7 +16,8 @@ import (
 )
 
 type TranslateRequest struct {
-	Text string `json:"text"`
+	Text     string `json:"text"`
+	Language string `json:"language"` // "it", "fr", "de", "es"
 }
 
 type TranslateResponse struct {
@@ -124,6 +125,16 @@ func translateHandler(database *sql.DB) http.HandlerFunc {
 			return
 		}
 
+		// Validate language (default to "it" if not provided)
+		if req.Language == "" {
+			req.Language = "it"
+		}
+		validLanguages := map[string]bool{"it": true, "fr": true, "de": true, "es": true}
+		if !validLanguages[req.Language] {
+			http.Error(w, fmt.Sprintf("Unsupported language: %s (supported: it, fr, de, es)", req.Language), http.StatusBadRequest)
+			return
+		}
+
 		// Step 1: Generate embedding for the query text
 		queryEmbedding, err := embeddings.GetEmbedding(req.Text, openAIKey, embeddingModel)
 		if err != nil {
@@ -132,8 +143,8 @@ func translateHandler(database *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		// Step 2: Retrieve similar cards from database
-		contextCards, err := rag.RetrieveSimilarCards(database, queryEmbedding, 6)
+		// Step 2: Retrieve similar cards from database (filtered by language)
+		contextCards, err := rag.RetrieveSimilarCards(database, queryEmbedding, 6, req.Language)
 		if err != nil {
 			log.Printf("Error retrieving similar cards: %v", err)
 			http.Error(w, fmt.Sprintf("Failed to retrieve context: %v", err), http.StatusInternalServerError)
@@ -141,7 +152,7 @@ func translateHandler(database *sql.DB) http.HandlerFunc {
 		}
 
 		// Step 3: Generate translation with context
-		translation, err := rag.GenerateTranslation(req.Text, contextCards, openAIKey)
+		translation, err := rag.GenerateTranslation(req.Text, contextCards, openAIKey, req.Language)
 		if err != nil {
 			log.Printf("Error generating translation: %v", err)
 			http.Error(w, fmt.Sprintf("Failed to generate translation: %v", err), http.StatusInternalServerError)

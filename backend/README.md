@@ -33,12 +33,19 @@ The server will start on `http://localhost:3001` (or PORT from .env).
 
 ### POST /translate
 
-Translates English Arkham LCG text to Italian using RAG.
+Translates English Arkham LCG text to multiple languages using RAG.
+
+**Supported Languages:**
+- `it` - Italian (default)
+- `fr` - French
+- `de` - German
+- `es` - Spanish
 
 **Request:**
 ```json
 {
-  "text": "You may spend [action] to investigate."
+  "text": "You may spend [action] to investigate.",
+  "language": "it"
 }
 ```
 
@@ -50,9 +57,13 @@ Translates English Arkham LCG text to Italian using RAG.
     {
       "card_name": "Example Card",
       "english_text": "...",
-      "italian_text": "..."
+      "translated_text": "..."
     }
   ]
 }
 ```
+
+**Notes:**
+- If `language` is not provided, defaults to `it` (Italian)
+- Only supported language codes are accepted (returns 400 for invalid languages)
 

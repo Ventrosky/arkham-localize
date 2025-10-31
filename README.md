@@ -1,8 +1,15 @@
 # Arkham Localize
 
-A Retrieval-Augmented Generation (RAG) system for translating Arkham Horror: The Card Game fan content into consistent Italian using official translations as context.
+A Retrieval-Augmented Generation (RAG) system for translating Arkham Horror: The Card Game fan content into multiple languages using arkhamdb translations as context.
 
 **Arkham Horror LCG Consistent Content Translator** - Grounded translations using vector similarity for consistent terminology.
+
+## Supported Languages
+
+- **Italian** (it)
+- **French** (fr)
+- **German** (de)
+- **Spanish** (es)
 
 ## 🚀 Quick Start (3 Commands)
 
@@ -146,8 +153,9 @@ make dev        # Start all services (db + backend + frontend)
 
 ## Key Features
 
+- **Multilanguage Support**: Translate to Italian, French, German, or Spanish
 - **Symbol Preservation**: Game symbols (e.g., `[action]`, `[elder_sign]`) are preserved exactly as entered
-- **Context-Aware**: Uses official Italian card translations to ensure terminology consistency
+- **Context-Aware**: Uses official card translations in the target language to ensure terminology consistency
 - **Transparent**: Shows which cards were used as context for each translation
 
 ## Documentation

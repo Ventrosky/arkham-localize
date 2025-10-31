@@ -26,7 +26,7 @@ type CardEntry struct {
 	CardName    string
 	IsBack      bool
 	EnglishText string
-	ItalianText string
+	Translations map[string]string // Language code -> translated text
 }
 
 var (
@@ -103,17 +103,23 @@ func main() {
 		}
 	}
 
-	// Load Italian translations
-	fmt.Println("\nLoading Italian translations...")
-	translations, err := loadItalianTranslations(dataPath)
-	if err != nil {
-		log.Fatalf("Failed to load Italian translations: %v", err)
+	// Load translations for all supported languages
+	fmt.Println("\nLoading translations for all supported languages...")
+	allTranslations := make(map[string]TranslationDict) // language -> TranslationDict
+	for _, lang := range []string{"it", "fr", "de", "es"} {
+		fmt.Printf("Loading %s translations...\n", lang)
+		translations, err := loadTranslations(dataPath, lang)
+		if err != nil {
+			log.Printf("Warning: Failed to load %s translations: %v\n", lang, err)
+			continue
+		}
+		allTranslations[lang] = translations
+		fmt.Printf("✓ Loaded %d card translations for %s\n", len(translations), lang)
 	}
-	fmt.Printf("✓ Loaded %d card translations\n", len(translations))
 
 	// Process card files
 	fmt.Println("\nExtracting card data...")
-	entries, err := processCardFiles(dataPath, translations)
+	entries, err := processCardFiles(dataPath, allTranslations)
 	if err != nil {
 		log.Fatalf("Failed to process card files: %v", err)
 	}

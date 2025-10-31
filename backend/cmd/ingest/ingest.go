@@ -25,7 +25,10 @@ func setupDatabase(db *sql.DB) error {
 			card_name TEXT NOT NULL,
 			is_back BOOLEAN DEFAULT FALSE,
 			english_text TEXT NOT NULL,
-			italian_text TEXT NOT NULL,
+			it_text TEXT,
+			fr_text TEXT,
+			de_text TEXT,
+			es_text TEXT,
 			embedding vector(1536),
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)`,
@@ -68,8 +71,11 @@ func extractCardText(card Card, isBack bool) string {
 
 type TranslationDict map[string]map[string]string
 
-func loadItalianTranslations(dataPath string) (TranslationDict, error) {
-	translationsDir := filepath.Join(dataPath, "translations", "it", "pack")
+// Supported languages for translation
+var supportedLanguages = []string{"it", "fr", "de", "es"}
+
+func loadTranslations(dataPath, language string) (TranslationDict, error) {
+	translationsDir := filepath.Join(dataPath, "translations", language, "pack")
 	translations := make(TranslationDict)
 
 	if _, err := os.Stat(translationsDir); os.IsNotExist(err) {
@@ -129,7 +135,7 @@ func loadItalianTranslations(dataPath string) (TranslationDict, error) {
 	return translations, nil
 }
 
-func findItalianTranslation(code, name string, translations TranslationDict, isBack bool) (string, bool) {
+func findTranslation(code, name string, translations TranslationDict, isBack bool) (string, bool) {
 	cardTrans, exists := translations[code]
 	if !exists {
 		return "", false
@@ -148,7 +154,7 @@ func findItalianTranslation(code, name string, translations TranslationDict, isB
 	return text, true
 }
 
-func processCardFiles(dataPath string, translations TranslationDict) ([]CardEntry, error) {
+func processCardFiles(dataPath string, allTranslations map[string]TranslationDict) ([]CardEntry, error) {
 	packDir := filepath.Join(dataPath, "pack")
 	var entries []CardEntry
 	processed := 0
@@ -191,14 +197,24 @@ func processCardFiles(dataPath string, translations TranslationDict) ([]CardEntr
 				// Process front text
 				englishText := extractCardText(card, false)
 				if englishText != "" {
-					italianText, found := findItalianTranslation(card.Code, card.Name, translations, false)
-					if found {
+					// Collect translations from all languages
+					translationsMap := make(map[string]string)
+					hasAnyTranslation := false
+					for _, lang := range supportedLanguages {
+						if transDict, ok := allTranslations[lang]; ok {
+							if transText, found := findTranslation(card.Code, card.Name, transDict, false); found {
+								translationsMap[lang] = transText
+								hasAnyTranslation = true
+							}
+						}
+					}
+					if hasAnyTranslation {
 						entries = append(entries, CardEntry{
-							CardCode:    card.Code,
-							CardName:    card.Name,
-							IsBack:      false,
-							EnglishText: englishText,
-							ItalianText: italianText,
+							CardCode:     card.Code,
+							CardName:     card.Name,
+							IsBack:       false,
+							EnglishText:  englishText,
+							Translations: translationsMap,
 						})
 						processed++
 					} else {
@@ -209,14 +225,24 @@ func processCardFiles(dataPath string, translations TranslationDict) ([]CardEntr
 				// Process back text
 				englishBackText := extractCardText(card, true)
 				if englishBackText != "" {
-					italianText, found := findItalianTranslation(card.Code, card.Name, translations, true)
-					if found {
+					// Collect translations from all languages
+					translationsMap := make(map[string]string)
+					hasAnyTranslation := false
+					for _, lang := range supportedLanguages {
+						if transDict, ok := allTranslations[lang]; ok {
+							if transText, found := findTranslation(card.Code, card.Name, transDict, true); found {
+								translationsMap[lang] = transText
+								hasAnyTranslation = true
+							}
+						}
+					}
+					if hasAnyTranslation {
 						entries = append(entries, CardEntry{
-							CardCode:    card.Code,
-							CardName:    card.Name,
-							IsBack:      true,
-							EnglishText: englishBackText,
-							ItalianText: italianText,
+							CardCode:     card.Code,
+							CardName:     card.Name,
+							IsBack:       true,
+							EnglishText:  englishBackText,
+							Translations: translationsMap,
 						})
 						processed++
 					} else {
@@ -342,12 +368,20 @@ func ingestCards(db *sql.DB, entries []CardEntry, apiKey, model string, batchSiz
 			}
 
 			vector := pgvector.NewVector(result.embedding)
+			// Get translations for each language (NULL if not available)
+			itText := result.entry.Translations["it"]
+			frText := result.entry.Translations["fr"]
+			deText := result.entry.Translations["de"]
+			esText := result.entry.Translations["es"]
 			batchData = append(batchData, []interface{}{
 				result.entry.CardCode,
 				result.entry.CardName,
 				result.entry.IsBack,
 				result.entry.EnglishText,
-				result.entry.ItalianText,
+				itText,
+				frText,
+				deText,
+				esText,
 				vector,
 			})
 		}
@@ -371,8 +405,8 @@ func insertBatch(db *sql.DB, batchData [][]interface{}) error {
 	}
 	defer tx.Rollback()
 
-	stmt := `INSERT INTO card_embeddings (card_code, card_name, is_back, english_text, italian_text, embedding)
-	         VALUES ($1, $2, $3, $4, $5, $6)`
+	stmt := `INSERT INTO card_embeddings (card_code, card_name, is_back, english_text, it_text, fr_text, de_text, es_text, embedding)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
 	for _, row := range batchData {
 		if _, err := tx.Exec(stmt, row...); err != nil {

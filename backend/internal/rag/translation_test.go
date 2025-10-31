@@ -21,23 +21,23 @@ func TestGenerateTranslation_SimilarToMachete(t *testing.T) {
 	// Create context cards similar to Machete (melee weapons)
 	contextCards := []ContextCard{
 		{
-			CardName:    "Machete",
-			CardCode:    "01020",
-			IsBack:      false,
-			EnglishText: "[action]: <b>Fight.</b> You get +1 [combat] for this attack. If the attacked enemy is the only enemy engaged with you, this attack deals +1 damage.",
-			ItalianText: "[action]: <b>Combatti.</b> Ricevi +1 [combat] in questo attacco. Se il nemico attaccato è l'unico nemico ingaggiato con te, questo attacco infligge +1 danno.",
+			CardName:       "Machete",
+			CardCode:       "01020",
+			IsBack:         false,
+			EnglishText:    "[action]: <b>Fight.</b> You get +1 [combat] for this attack. If the attacked enemy is the only enemy engaged with you, this attack deals +1 damage.",
+			TranslatedText: "[action]: <b>Combatti.</b> Ricevi +1 [combat] in questo attacco. Se il nemico attaccato è l'unico nemico ingaggiato con te, questo attacco infligge +1 danno.",
 		},
 		{
-			CardName:    "Survival Knife",
-			CardCode:    "03003",
-			IsBack:      false,
-			EnglishText: "[action]: <b>Fight.</b> You get +1 [combat] for this attack.",
-			ItalianText: "[action]: <b>Combatti.</b> Ricevi +1 [combat] in questo attacco.",
+			CardName:       "Survival Knife",
+			CardCode:       "03003",
+			IsBack:         false,
+			EnglishText:    "[action]: <b>Fight.</b> You get +1 [combat] for this attack.",
+			TranslatedText: "[action]: <b>Combatti.</b> Ricevi +1 [combat] in questo attacco.",
 		},
 	}
 
-	// Generate translation
-	translation, err := GenerateTranslation(englishText, contextCards, apiKey)
+	// Generate translation (using Italian as target language for the test)
+	translation, err := GenerateTranslation(englishText, contextCards, apiKey, "it")
 	if err != nil {
 		t.Fatalf("Failed to generate translation: %v", err)
 	}

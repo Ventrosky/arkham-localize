@@ -13,7 +13,7 @@ func TestRetrieveSimilarCards_EmptyEmbedding(t *testing.T) {
 	var db *sql.DB
 	emptyEmbedding := []float32{}
 
-	cards, err := RetrieveSimilarCards(db, emptyEmbedding, 5)
+	cards, err := RetrieveSimilarCards(db, emptyEmbedding, 5, "it")
 
 	if err == nil {
 		t.Error("Expected error for empty embedding, got nil")
@@ -104,9 +104,9 @@ func TestRetrieveSimilarCards_RealDatabase(t *testing.T) {
 
 	t.Logf("Retrieved embedding with %d dimensions", len(embedding))
 
-	// Test retrieval - search for cards similar to Machete
+	// Test retrieval - search for cards similar to Machete (using Italian)
 	limit := 6
-	cards, err := RetrieveSimilarCards(database, embedding, limit)
+	cards, err := RetrieveSimilarCards(database, embedding, limit, "it")
 	if err != nil {
 		t.Fatalf("Failed to retrieve similar cards: %v", err)
 	}

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import TranslationForm from './components/TranslationForm'
 import TranslationResult from './components/TranslationResult'
 import ContextCards from './components/ContextCards'
-import { translate, TranslateResponse } from './lib/api'
+import { translate, TranslateResponse, SupportedLanguage } from './lib/api'
 import './App.css'
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
   const [result, setResult] = useState<TranslateResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const handleTranslate = async (text: string) => {
+  const handleTranslate = async (text: string, language: SupportedLanguage) => {
     if (!text.trim()) {
       setError('Please enter text to translate')
       return
@@ -21,7 +21,7 @@ function App() {
     setResult(null)
 
     try {
-      const response = await translate(text)
+      const response = await translate(text, language)
       setResult(response)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to translate')

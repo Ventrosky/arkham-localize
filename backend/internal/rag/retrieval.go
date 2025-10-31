@@ -9,29 +9,42 @@ import (
 
 // ContextCard represents a card used as context for translation
 type ContextCard struct {
-	CardName    string `json:"card_name"`
-	CardCode    string `json:"card_code"`
-	IsBack      bool   `json:"is_back"`
-	EnglishText string `json:"english_text"`
-	ItalianText string `json:"italian_text"`
+	CardName       string `json:"card_name"`
+	CardCode       string `json:"card_code"`
+	IsBack         bool   `json:"is_back"`
+	EnglishText    string `json:"english_text"`
+	TranslatedText string `json:"translated_text"` // Text in the target language
 }
 
 // RetrieveSimilarCards retrieves the most similar cards from the database
-// using vector similarity search
-func RetrieveSimilarCards(db *sql.DB, queryEmbedding []float32, limit int) ([]ContextCard, error) {
+// using vector similarity search, filtered by target language
+// language is one of: "it", "fr", "de", "es"
+func RetrieveSimilarCards(db *sql.DB, queryEmbedding []float32, limit int, language string) ([]ContextCard, error) {
 	if len(queryEmbedding) == 0 {
 		return nil, fmt.Errorf("query embedding is empty")
 	}
 
+	// Validate language
+	validLanguages := map[string]string{
+		"it": "it_text",
+		"fr": "fr_text",
+		"de": "de_text",
+		"es": "es_text",
+	}
+	langColumn, ok := validLanguages[language]
+	if !ok {
+		return nil, fmt.Errorf("unsupported language: %s (supported: it, fr, de, es)", language)
+	}
+
 	vector := pgvector.NewVector(queryEmbedding)
 
-	query := `
-		SELECT card_code, card_name, is_back, english_text, italian_text
+	query := fmt.Sprintf(`
+		SELECT card_code, card_name, is_back, english_text, COALESCE(%s, '') as translated_text
 		FROM card_embeddings
-		WHERE embedding IS NOT NULL AND card_code IS NOT NULL
+		WHERE embedding IS NOT NULL AND card_code IS NOT NULL AND %s IS NOT NULL
 		ORDER BY embedding <-> $1
 		LIMIT $2
-	`
+	`, langColumn, langColumn)
 
 	rows, err := db.Query(query, vector, limit)
 	if err != nil {
@@ -39,7 +52,7 @@ func RetrieveSimilarCards(db *sql.DB, queryEmbedding []float32, limit int) ([]Co
 	}
 	defer rows.Close()
 
-	var cards []ContextCard
+	cards := []ContextCard{} // Initialize as empty slice, not nil
 	for rows.Next() {
 		var card ContextCard
 		if err := rows.Scan(
@@ -47,7 +60,7 @@ func RetrieveSimilarCards(db *sql.DB, queryEmbedding []float32, limit int) ([]Co
 			&card.CardName,
 			&card.IsBack,
 			&card.EnglishText,
-			&card.ItalianText,
+			&card.TranslatedText,
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan card: %w", err)
 		}
@@ -60,4 +73,3 @@ func RetrieveSimilarCards(db *sql.DB, queryEmbedding []float32, limit int) ([]Co
 
 	return cards, nil
 }
-

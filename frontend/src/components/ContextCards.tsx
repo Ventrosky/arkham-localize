@@ -50,10 +50,10 @@ function CardContextDisplay({ card }: CardContextDisplayProps) {
           )}
         </div>
       )}
-      <p className="text-sm font-semibold text-gray-400">EN:</p>
-      <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.english_text}</p>
-      <p className="text-sm font-semibold text-gray-400 mt-2">IT:</p>
-      <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.italian_text}</p>
+          <p className="text-sm font-semibold text-gray-400">EN:</p>
+          <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.english_text}</p>
+          <p className="text-sm font-semibold text-gray-400 mt-2">Translation:</p>
+          <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.translated_text}</p>
     </div>
   )
 }
@@ -69,7 +69,7 @@ export default function ContextCards({ cards }: ContextCardsProps) {
         Grounded Context (Vector Search Matches)
       </h2>
       <p className="text-gray-400 text-sm mb-4">
-        These are the existing English/Italian card pairs retrieved from the Vector Database based on similarity to your input. This context is sent to the AI to ensure consistent LCG terminology.
+        These are the existing English/Target Language card pairs retrieved from the Vector Database based on similarity to your input. This context is sent to the AI to ensure consistent LCG terminology.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {cards.map((card, index) => (
