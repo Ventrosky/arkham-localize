@@ -1,3 +1,12 @@
+export type SupportedLanguage = 'it' | 'fr' | 'de' | 'es';
+
+export const SUPPORTED_LANGUAGES = [
+  { code: 'it', name: 'Italian' },
+  { code: 'fr', name: 'French' },
+  { code: 'de', name: 'German' },
+  { code: 'es', name: 'Spanish' },
+] as const;
+
 export interface ContextCard {
   card_name: string;
   card_code: string;
@@ -11,24 +20,13 @@ export interface TranslateResponse {
   context: ContextCard[];
 }
 
-export interface TranslateRequest {
-  text: string;
-  language: string; // "it", "fr", "de", "es"
-}
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-export type SupportedLanguage = 'it' | 'fr' | 'de' | 'es';
-
-export const SUPPORTED_LANGUAGES: { code: SupportedLanguage; name: string }[] = [
-  { code: 'it', name: 'Italian' },
-  { code: 'fr', name: 'French' },
-  { code: 'de', name: 'German' },
-  { code: 'es', name: 'Spanish' },
-];
-
-const API_BASE_URL = (import.meta.env?.VITE_API_URL as string) || 'http://localhost:3001';
-
-export async function translate(text: string, language: SupportedLanguage = 'it'): Promise<TranslateResponse> {
-  const response = await fetch(`${API_BASE_URL}/translate`, {
+export async function translate(
+  text: string,
+  language: SupportedLanguage
+): Promise<TranslateResponse> {
+  const response = await fetch(`${API_URL}/translate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,18 +35,9 @@ export async function translate(text: string, language: SupportedLanguage = 'it'
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Translation failed: ${error}`);
+    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(error.error || `HTTP error! status: ${response.status}`);
   }
 
   return response.json();
 }
-
-export async function healthCheck(): Promise<{ status: string; service: string }> {
-  const response = await fetch(`${API_BASE_URL}/health`);
-  if (!response.ok) {
-    throw new Error('Health check failed');
-  }
-  return response.json();
-}
-

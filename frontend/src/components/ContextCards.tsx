@@ -1,22 +1,20 @@
-import { ContextCard } from '../lib/api'
+import { ContextCard } from '../lib/api';
 
 interface ContextCardsProps {
-  cards: ContextCard[]
+  cards: ContextCard[];
 }
 
 interface CardContextDisplayProps {
-  card: ContextCard
+  card: ContextCard;
 }
 
 function CardContextDisplay({ card }: CardContextDisplayProps) {
-  const arkhamDbUrl = card.card_code 
-    ? `https://arkhamdb.com/card/${card.card_code}` 
-    : null;
+  const arkhamDbUrl = card.card_code ? `https://arkhamdb.com/card/${card.card_code}` : null;
 
   return (
     <div className="p-3 border border-gray-700 bg-gray-800 rounded-lg shadow-inner flex flex-col gap-1">
       {arkhamDbUrl ? (
-        <a 
+        <a
           href={arkhamDbUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -44,23 +42,21 @@ function CardContextDisplay({ card }: CardContextDisplayProps) {
             </span>
           )}
           {card.is_back && (
-            <span className="bg-blue-900 text-blue-200 px-2 py-1 rounded text-xs">
-              Back
-            </span>
+            <span className="bg-blue-900 text-blue-200 px-2 py-1 rounded text-xs">Back</span>
           )}
         </div>
       )}
-          <p className="text-sm font-semibold text-gray-400">EN:</p>
-          <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.english_text}</p>
-          <p className="text-sm font-semibold text-gray-400 mt-2">Translation:</p>
-          <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.translated_text}</p>
+      <p className="text-sm font-semibold text-gray-400">EN:</p>
+      <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.english_text}</p>
+      <p className="text-sm font-semibold text-gray-400 mt-2">Translation:</p>
+      <p className="text-sm italic text-gray-200 whitespace-pre-wrap">{card.translated_text}</p>
     </div>
-  )
+  );
 }
 
 export default function ContextCards({ cards }: ContextCardsProps) {
   if (cards.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -69,7 +65,9 @@ export default function ContextCards({ cards }: ContextCardsProps) {
         Grounded Context (Vector Search Matches)
       </h2>
       <p className="text-gray-400 text-sm mb-4">
-        These are the existing English/Target Language card pairs retrieved from the Vector Database based on similarity to your input. This context is sent to the AI to ensure consistent LCG terminology.
+        These are the existing English/Target Language card pairs retrieved from the Vector Database
+        based on similarity to your input. This context is sent to the AI to ensure consistent LCG
+        terminology.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {cards.map((card, index) => (
@@ -77,5 +75,5 @@ export default function ContextCards({ cards }: ContextCardsProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }
