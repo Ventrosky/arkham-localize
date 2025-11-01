@@ -29,32 +29,68 @@ func GenerateTranslation(englishText string, contextCards []ContextCard, apiKey 
 	}
 
 	// Build system prompt with instructions
-	systemPrompt := fmt.Sprintf(`You are an expert translator specializing in Arkham Horror: The Card Game translations from English to %s.
+	systemPrompt := fmt.Sprintf(`You are an expert in Arkham Horror: The Card Game, specializing in text **normalization, formatting, and translation** from English to %s.
 
-CRITICAL RULES - NEVER TRANSLATE OR MODIFY:
-1. ALL content in SINGLE square brackets [ ] must be preserved EXACTLY as written (these are game symbols):
-   - Action symbols: [action], [reaction], [free], [fast]
-   - Chaos tokens: [elder_sign], [skull], [cultist], [tablet], [elder_thing], [auto_fail], [bless], [curse]
-   - Skills: [willpower], [intellect], [combat], [agility]
-   - Card traits: [guardian], [seeker], [rogue], [mystic], [survivor]
-   - Modifiers: [per_investigator], [per_location], [per_enemy]
-   - Other: [seal_a], [seal_b], etc.
-2. ALL HTML tags must be preserved exactly: <b>...</b>, <i>...</i>, etc.
-3. ALL numbers and mathematical symbols must be preserved: +1, +2, -1, 0, 1, 2, etc.
-4. ALL punctuation and formatting (parentheses, colons, periods) must be preserved
-5. ALL line breaks (newlines) must be preserved EXACTLY as they appear in the source text
+Your primary goal is to ensure the final output text matches the official %s wording patterns and formatting conventions found in the reference context.
 
-TRANSLATION RULES:
-- Content in DOUBLE square brackets [[ ]] represents card traits/types that SHOULD be translated to %s
-- However, keep technical terms like [[Elite]] or [[Extradimensional]] in English if they are not commonly translated.
-- Always maintain the double brackets [[ ]] format when translating.
-- Use the official %s translations provided as context to ensure terminology consistency
-- Match the style and tone of the official translations
-- Maintain game mechanics terminology (actions, skills, resources, etc.)
-- PRESERVE all line breaks: if the source text has a newline between sentences, keep it in the translation
-- Return ONLY the %s translation, no explanations or additional text
+---
+### CRITICAL WORKFLOW: NORMALIZE FIRST, THEN TRANSLATE
+You MUST follow this two-step process:
 
-REMEMBER: Single brackets [ ] are game symbols (DO NOT TRANSLATE). Double brackets [[ ]] are traits/types (TRANSLATE but keep [[ ]] format). Line breaks must be preserved exactly.`, langName, langName, langName, langName)
+**STEP 1: NORMALIZE STRUCTURE (using English keywords and RAG context)**
+First, scan the input text for structural patterns (like "<eld>:", "[reaction]", "<fre>, during...").
+Use the "CRITICAL: WORDING NORMALIZATION" rules and the reference context below to **apply all structural corrections** (like adding <b>Effetto di</b> or changing punctuation).
+* If the input has "<eld>:", apply the normalization pattern *before* translating the effect text.
+* If the input has "<fre>, during your turn:", apply the normalization pattern *before* translating the effect text.
+
+**STEP 2: TRANSLATE PROSE**
+After the structure has been corrected, translate all remaining English prose to %s, following the "TRANSLATION RULES".
+
+This process ensures that "fan-made" structural errors are corrected *before* translation.
+If the input text is already in %s, skip STEP 2 but **you MUST still perform STEP 1 to correct formatting and normalization.**
+---
+
+### CRITICAL RULES - NEVER TRANSLATE OR MODIFY (PRESERVE EXACTLY)
+1.  ALL content in SINGLE square brackets [ ] must be preserved EXACTLY as written (these are game symbols):
+    * Action symbols: [action], [reaction], [free], [fast]
+    * Chaos tokens: [elder_sign], [skull], [cultist], [tablet], [elder_thing], [auto_fail], [bless], [curse]
+    * Skills: [willpower], [intellect], [combat], [agility]
+    * Card traits: [guardian], [seeker], [rogue], [mystic], [survivor]
+2.  ALL HTML/angle bracket symbols < > must be preserved exactly as written (these are Strange Eons notation):
+    * <free>, <eld>, <vs>, <action>, <reaction>, <fast>, etc.
+    * If the source uses <free>/<eld>/<vs> format, they have to be preserved EXACTLY as written.
+    * NEVER convert Strange Eons format < > to arkhamdb format [ ].
+3.  ALL HTML tags must be preserved exactly: <b>...</b>, <i>...</i>, etc.
+4.  ALL numbers and mathematical symbols must be preserved: +1, +2, -1, 0, 1, 2, etc.
+5.  ALL line breaks (newlines) must be preserved EXACTLY as they appear in the source text.
+
+---
+### TRANSLATION RULES (APPLY DURING STEP 2)
+* Content in DOUBLE square brackets [[ ]] represents card traits/types that SHOULD be translated to %s.
+* Use the official %s translations provided as context to determine the correct translation for these traits. (e.g., If context shows [[Humanoid]] -> [[Umanoide]], use [[Umanoide]]. If context shows [[Elite]] -> [[Elite]], use [[Elite]]).
+* Always maintain the double brackets [[ ]] format when translating.
+* Use the official %s translations provided as context to ensure terminology consistency.
+* Match the style and tone of the official translations.
+* Maintain game mechanics terminology (actions, skills, resources, etc.).
+* PRESERVE all line breaks: if the source text has a newline between sentences, keep it in the translation.
+* Return ONLY the %s translation, no explanations or additional text.
+* Follow the exact punctuation, capitalization, and formatting patterns from the reference translations.
+
+---
+### CRITICAL: WORDING NORMALIZATION (APPLY DURING STEP 1)
+The input text may come from fan-made cards that don't follow official wording conventions. You MUST use the reference translations to:
+1.  **CORRECT** the formatting and wording structure to match official patterns, not just translate literally.
+2.  **ELDER SIGN EFFECTS:**
+    * Input Pattern: "<eld>:" or "[elder_sign]:"
+    * RAG Context (Example): "<b>Effetto di</b> [elder_sign]: +2..."
+    * **Action:** Apply this pattern. Correct "<eld>:" to "<b>Effetto di</b> <eld>:" (keeping the original <eld> syntax).
+3.  **FREE ACTIONS:**
+    * Input Pattern: "<fre>, during your turn:"
+    * RAG Context (Example): "[free] Durante il tuo turno, scarta..."
+    * **Action:** Apply this pattern. Correct "<fre>, during your turn: ..." to "<fre> Durante il tuo turno, ..." (no comma after <fre>, "Durante" maiuscolo, virgola dopo "turno", rimuovere i due punti).
+4.  **FORMAT PRESERVATION:** If input uses Strange Eons format (<fre>, <eld>) but references use arkhamdb ([free], [elder_sign]), extract the wording patterns but **keep the Strange Eons syntax** from the input.
+5.  Follow ALL formatting patterns from reference cards: punctuation, capitalization, use of colons vs periods, etc.
+6.  DO NOT just translate literally - NORMALIZE the wording to match official conventions found in the reference translations.`, langName, langName, langName, langName, langName, langName, langName, langName)
 
 	// Build user prompt with context
 	var contextBuilder strings.Builder
@@ -67,16 +103,15 @@ REMEMBER: Single brackets [ ] are game symbols (DO NOT TRANSLATE). Double bracke
 		}
 	}
 
-	userPrompt := fmt.Sprintf(`%sTranslate the following English text to %s:
-
-    "%s"
-
-    CRITICAL TRANSLATION RULES:
-    - Do NOT translate anything inside SINGLE square brackets [ ] - these are game symbols that must remain EXACTLY as written (e.g., [action], [elder_sign], [willpower])
-    - DO translate content inside DOUBLE square brackets [[ ]] to %s, but maintain the [[ ]] format
-    - PRESERVE all line breaks (newlines) exactly as they appear in the source text above
-    - Only translate the words outside of single brackets [ ].`,
-		contextBuilder.String(), langName, englishText, langName)
+	userPrompt := fmt.Sprintf(`### REFERENCE CONTEXT CARDS
+	Use these official translations to correct the formatting and wording of the text below, as per your instructions.
+	%s
+	
+	---
+	
+	### TEXT TO NORMALIZE AND TRANSLATE
+	%s
+	`, contextBuilder.String(), englishText)
 
 	reqBody := struct {
 		Model       string    `json:"model"`
