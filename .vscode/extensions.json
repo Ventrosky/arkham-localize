@@ -1,9 +1,6 @@
 {
   "recommendations": [
-    "golang.go",
     "esbenp.prettier-vscode",
-    "yzhang.markdown-all-in-one",
-    "mkhl.shfmt"
+    "dbaeumer.vscode-eslint"
   ]
 }
-
